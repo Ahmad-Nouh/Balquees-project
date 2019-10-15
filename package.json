@@ -1,0 +1,22 @@
+{
+  "name": "Balquees",
+  "version": "1.0.0",
+  "description": "project for balquess company",
+  "main": "y",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "keywords": [
+    "node.js"
+  ],
+  "author": "Ahmad & Yaman",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "joi": "^14.3.1",
+    "mongodb": "^3.3.2",
+    "mongoose": "^5.7.1"
+  }
+}
