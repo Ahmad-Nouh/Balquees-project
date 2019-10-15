@@ -2,11 +2,8 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const paintRoute = require('./routes/paintMixes');
-<<<<<<< HEAD
 const bodyRoute = require('./routes/bodyMixes');
-=======
 const engobRoute = require('./routes/engobMixes');
->>>>>>> 5f8695b8ed6a5aa0cd47d883e4d04dabedaeced6
 const mongoose = require('mongoose');
 const cors = require('cors');
 
