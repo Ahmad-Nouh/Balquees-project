@@ -7,10 +7,14 @@ const schema = new mongoose.Schema({
     },
     components: {
         type: [BodyComponentSchema]
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now()
     }
 });
 
-const Body = mongoose.model('Body', schema);
+const BodyMix = mongoose.model('BodyMix', schema);
 
-module.exports.Body = Body;
-module.exports.BodySchema = schema;
+module.exports.BodyMix = BodyMix;
+module.exports.BodyMixSchema = schema;

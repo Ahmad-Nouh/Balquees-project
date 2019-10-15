@@ -26,7 +26,7 @@ async function updatePaintMixes(req, res) {
         type: req.body.type,
         glize: req.body.glize,
         components: req.body.components
-    });
+    }, { new: true });
 
 
     paintMix = await paintMix.save();

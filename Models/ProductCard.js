@@ -90,7 +90,7 @@ const schema = new mongoose.Schema({
     },
     bodyMix: {
         type: mongoose.Schema.ObjectId,
-        ref: 'Body'
+        ref: 'BodyMix'
     }
 });
 

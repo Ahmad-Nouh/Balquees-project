@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const paintRoute = require('./routes/paintMixes');
+const bodyRoute = require('./routes/bodyMixes');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
@@ -19,6 +20,8 @@ app.use(express.json());
 
 
 app.use('/api/paint', paintRoute);
+
+app.use('/api/body', bodyRoute);
 
 
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));
