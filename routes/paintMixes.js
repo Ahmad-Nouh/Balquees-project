@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/paint-mix-controller');

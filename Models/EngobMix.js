@@ -16,6 +16,10 @@ const schema = new mongoose.Schema({
     },
     components: {
         type: [ComponentSchema]
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now()
     }
 });
 

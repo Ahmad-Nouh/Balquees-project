@@ -24,7 +24,6 @@ async function createEngobMixes(req, res) {
 
 
 async function updateEngobMixes(req, res) {
-
     let newEngobMix = await EngobMix.findById(req.params.id);
     if(!newEngobMix) return res.status(404).send('Engob Mix not found!!');
     const {error} = validateEngobMix(req.body);
