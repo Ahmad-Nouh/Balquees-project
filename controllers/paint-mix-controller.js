@@ -48,12 +48,13 @@ async function deletePaintMixes(req, res) {
 
 function validatePaintMix(bookmark) {
     const componentsSchema = Joi.object().keys({
-
+        _id: Joi.string().optional(),
         name: Joi.string().trim().min(1).required(),
         quantity: Joi.number().integer().min(1).required(),
     });
     const schema = {
-        
+        _id: Joi.string().optional(),
+        createdAt: Joi.string().optional(),
         code: Joi.string().trim().min(1).required(),
         type: Joi.string().trim().min(1).required(),
         glize: Joi.string().trim().min(1).required(),
