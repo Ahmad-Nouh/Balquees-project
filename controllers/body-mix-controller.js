@@ -44,8 +44,13 @@ async function deleteBodyMixes(req, res) {
 function validateBodyMix(bookmark) {
     const componentsSchema = Joi.object().keys({
 
-        name: Joi.string().trim().min(1).required(),
-        quantity: Joi.number().integer().min(1).required(),
+        name:     Joi.string().trim().min(1).required(),
+        quantity: Joi.number().min(1).required(),
+        moisture: Joi.number().min(1).required(),
+        dryRM:    Joi.number().min(1).required(),
+        wetRM:    Joi.number().min(1).required(),
+        wet:      Joi.number().min(1).required(),
+
     });
     const schema = {
         
