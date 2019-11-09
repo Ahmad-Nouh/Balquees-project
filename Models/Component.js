@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
-    name: {
-        type: String,
+    material: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Material'
     },
     quantity: {
         type: Number

@@ -12,7 +12,8 @@ async function createMaterial(req, res) {
     if(error) return res.status(400).send(error.details[0].message);
     let newMaterial = new Material({
         name: req.body.name,
-        quantity: req.body.quantity
+        quantity: req.body.quantity,
+        createdAt: Date.now()
     });
 
     newMaterial = await newMaterial.save();
@@ -46,7 +47,6 @@ function validateMaterial(material) {
         _id: Joi.string().optional(),
         name: Joi.string().trim().min(1).max(255).required(),
         quantity: Joi.number().optional(),
-        createdAt: Joi.string().optional(),
         updatedAt: Joi.string().optional()
     };
 

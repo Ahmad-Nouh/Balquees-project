@@ -2,7 +2,13 @@ const {EngobMix} = require('../Models/EngobMix');
 const Joi = require('joi');
 
 async function getEngobMixs(req, res) {
-    const engobMixes = await EngobMix.find();
+    const engobMixes = await EngobMix
+    .find()
+    .populate({
+        path: 'components.material',
+        model: 'Material',
+    });
+
     if(!engobMixes) return res.status(404).send('getEngobMix not found!!');
     return res.send(engobMixes);
 }
@@ -14,26 +20,36 @@ async function createEngobMixes(req, res) {
         code: req.body.code,
         type: req.body.type,
         glize: req.body.glize,
-        components: req.body.components
+        components: req.body.components,
+        createdAt: Date.now()
     });
 
     newEngob = await newEngob.save();
 
-    return res.send(newEngob);
+    const result = await EngobMix.populate(newEngob, {
+        path: 'components.material',
+        model: 'Material'
+    });
+
+    return res.send(result);
 }
 
 
 async function updateEngobMixes(req, res) {
-    let newEngobMix = await EngobMix.findById(req.params.id);
-    if(!newEngobMix) return res.status(404).send('Engob Mix not found!!');
     const {error} = validateEngobMix(req.body);
     if(error) return res.status(400).send(error.details[0].message);
 
-      newEngobMix.code = req.body.code,
-      newEngobMix.type = req.body.type,
-      newEngobMix.glize = req.body.glize,
-      newEngobMix.components = req.body.components;
-      newEngobMix = await newEngobMix.save();
+    const newEngobMix = await EngobMix.findByIdAndUpdate(req.params.id, {
+    $set: {
+        code: req.body.code,
+        components: req.body.components,
+        type: req.body.type,
+        glize: req.body.glize
+    }
+    }, {new: true}).populate({
+        path: 'components.material',
+        model: 'Material',
+    });
 
     return res.send(newEngobMix);
 }
@@ -47,7 +63,7 @@ async function deleteEngobMixes(req, res) {
 function validateEngobMix(bookmark) {
     const componentsSchema = Joi.object().keys({
         _id: Joi.string().optional(),
-        name: Joi.string().trim().min(1).required(),
+        material: Joi.string().required(),
         quantity: Joi.number().integer().min(1).required(),
     });
     const schema = {
