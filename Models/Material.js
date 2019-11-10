@@ -8,6 +8,10 @@ const schema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    warehouse: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Warehouse'
+    },
     weightPerMeter: {
         type: Number
     },
