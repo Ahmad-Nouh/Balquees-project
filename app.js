@@ -4,6 +4,8 @@ const PORT = process.env.PORT || 3000;
 const paintRoute = require('./routes/paintMixes');
 const bodyRoute = require('./routes/bodyMixes');
 const engobRoute = require('./routes/engobMixes');
+const materialRoute = require('./routes/materials');
+const warehouseRoute = require('./routes/warehouses');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
@@ -18,7 +20,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
 
+app.use('/api/material', materialRoute);
 
+app.use('/api/warehouse', warehouseRoute);
 
 app.use('/api/paint', paintRoute);
 
@@ -27,3 +31,4 @@ app.use('/api/body', bodyRoute);
 app.use('/api/engob', engobRoute);
 
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));
+

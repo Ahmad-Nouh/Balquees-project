@@ -2,7 +2,12 @@ const {BodyMix} = require('../Models/BodyMix');
 const Joi = require('joi');
 
 async function getBodyMixes(req, res) {
-    const bodyMixes = await BodyMix.find();
+    const bodyMixes = await BodyMix
+        .find()
+        .populate({
+            path: 'components.material',
+            model: 'Material',
+        });
     if(!bodyMixes) return res.status(404).send('getBodyMix not found!!');
     return res.send(bodyMixes);
 }
@@ -14,25 +19,34 @@ async function createBodyMixes(req, res) {
         code:       req.body.code,
         components: req.body.components,
         createdAt:  Date.now()
+
     });
 
     newBody = await newBody.save();
 
-    return res.send(newBody);
+    const result = await BodyMix.populate(newBody, {
+        path: 'components.material',
+        model: 'Material'
+    });
+
+    return res.send(result);
 }
 
 
 async function updateBodyMixes(req, res) {
-    let newBodyMix = await BodyMix.findById(req.params.id);
-    if(!newBodyMix) return res.status(404).send('Body Mix not found!!');
     const {error} = validateBodyMix(req.body);
     if(error) return res.status(400).send(error.details[0].message);
 
-      newBodyMix.code =       req.body.code,
-      newBodyMix.components = req.body.components,
-
-      newBodyMix = await newBodyMix.save();
-
+    const newBodyMix = await BodyMix.findByIdAndUpdate(req.params.id, {
+        $set: {
+            code: req.body.code,
+            components: req.body.components
+        }
+    }, {new: true}).populate({
+        path: 'components.material',
+        model: 'Material',
+    });
+    
     return res.send(newBodyMix);
 }
 
@@ -45,13 +59,13 @@ async function deleteBodyMixes(req, res) {
 
 function validateBodyMix(bodyMix) {
     const componentsSchema = Joi.object().keys({
-        _id:        Joi.string().optional(),
-        name:       Joi.string().trim().min(1).required(),
-        quantity:   Joi.number().min(1).required(),
-        moisture:   Joi.number().min(1).required(),
-        dryRM:      Joi.number().min(1).required(),
-        wetRM:      Joi.number().min(1).required(),
-        wet:        Joi.number().min(1).required(),
+        _id:      Joi.string().optional(),
+        material: Joi.string().required(),
+        quantity: Joi.number().min(1).required(),
+        moisture: Joi.number().min(1).required(),
+        dryRM:    Joi.number().min(1).required(),
+        wetRM:    Joi.number().min(1).required(),
+        wet:      Joi.number().min(1).required(),
 
     });
     const schema = {
