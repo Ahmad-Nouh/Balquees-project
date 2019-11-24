@@ -11,8 +11,9 @@ async function createBodyMixes(req, res) {
     const {error} = validateBodyMix(req.body);
     if(error) return res.status(400).send(error.details[0].message);
     let newBody = new BodyMix({
-        code: req.body.code,
-        components: req.body.components
+        code:       req.body.code,
+        components: req.body.components,
+        createdAt:  Date.now()
     });
 
     newBody = await newBody.save();
@@ -27,8 +28,9 @@ async function updateBodyMixes(req, res) {
     const {error} = validateBodyMix(req.body);
     if(error) return res.status(400).send(error.details[0].message);
 
-      newBodyMix.code = req.body.code,
-      newBodyMix.components = req.body.components;
+      newBodyMix.code =       req.body.code,
+      newBodyMix.components = req.body.components,
+
       newBodyMix = await newBodyMix.save();
 
     return res.send(newBodyMix);
@@ -41,25 +43,25 @@ async function deleteBodyMixes(req, res) {
     return res.send(bodyMix);
 }
 
-function validateBodyMix(bookmark) {
+function validateBodyMix(bodyMix) {
     const componentsSchema = Joi.object().keys({
-        _id:      Joi.string().optional(),
-        name:     Joi.string().trim().min(1).required(),
-        quantity: Joi.number().min(1).required(),
-        moisture: Joi.number().min(1).required(),
-        dryRM:    Joi.number().min(1).required(),
-        wetRM:    Joi.number().min(1).required(),
-        wet:      Joi.number().min(1).required(),
+        _id:        Joi.string().optional(),
+        name:       Joi.string().trim().min(1).required(),
+        quantity:   Joi.number().min(1).required(),
+        moisture:   Joi.number().min(1).required(),
+        dryRM:      Joi.number().min(1).required(),
+        wetRM:      Joi.number().min(1).required(),
+        wet:        Joi.number().min(1).required(),
 
     });
     const schema = {
-        _id: Joi.string().optional(),
-        createdAt: Joi.string().optional(),
-        code: Joi.string().trim().min(1).required(),
-        components: Joi.array().items(componentsSchema).min(1).required()
+        _id:        Joi.string().optional(),
+        code:       Joi.string().trim().min(1).required(),
+        components: Joi.array().items(componentsSchema).min(1).required(),
+        createdAt:  Joi.date().default(Date.now())
     };
 
-    return Joi.validate(bookmark, schema);
+    return Joi.validate(bodyMix, schema);
 }
 
 
