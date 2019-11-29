@@ -61,22 +61,23 @@ async function deletePaintMixes(req, res) {
 }
 
 
-function validatePaintMix(bookmark) {
+function validatePaintMix(paintMix) {
     const componentsSchema = Joi.object().keys({
         _id: Joi.string().optional(),
         material: Joi.string().required(),
         quantity: Joi.number().min(0).required(),
     });
     const schema = {
-        _id: Joi.string().optional(),
-        createdAt: Joi.string().optional(),
-        code: Joi.string().trim().min(1).required(),
-        type: Joi.string().trim().min(1).required(),
-        glize: Joi.string().trim().min(1).required(),
-        components: Joi.array().items(componentsSchema).min(1).required()
+        _id:         Joi.string().optional(),
+        createdAt:   Joi.string().optional(),
+        code:        Joi.string().trim().min(1).required(),
+        type:        Joi.string().trim().min(1).required(),
+        glize:       Joi.string().trim().min(1).required(),
+        components:  Joi.array().items(componentsSchema).min(1).required(),
+        createdAt:   Joi.date().default(Date.now())
     };
 
-    return Joi.validate(bookmark, schema);
+    return Joi.validate(paintMix, schema);
 }
 
 

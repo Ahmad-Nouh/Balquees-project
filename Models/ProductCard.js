@@ -16,49 +16,7 @@ const schema = new mongoose.Schema({
     dimensions: {
         type: DimensionsSchema
     },
-    productType: {
-        type: String,
-        enum: [
-            WALLS_MAT,
-            WALLS_TRANSPARENT,
-            FLOORS_MAT,
-            FLOORS_TRANSPARENT
-        ]
-    },
-    engobType: {
-        type: String,
-        enum: [
-            WALLS_MAT,
-            WALLS_TRANSPARENT,
-            FLOORS_MAT,
-            FLOORS_TRANSPARENT
-        ]
-    },
-    paintType: {
-        type: String,
-        enum: [
-            WALLS_MAT,
-            WALLS_TRANSPARENT,
-            FLOORS_MAT,
-            FLOORS_TRANSPARENT
-        ]
-    },
-    pintMixCode: {
-        type: String,
-    },
-    engobMixCode: {
-        type: String,
-    },
-    bodyType: {
-        type: String,
-        enum: [
-            WALLS,
-            FLOORS
-        ]
-    },
-    bodyCode: {
-        type: String,
-    },
+
     bOvenHeat: {
         type: HeatSchema,
     },
@@ -77,20 +35,35 @@ const schema = new mongoose.Schema({
     paintFactors: {
         type: FactorsSchema,
     },
+    
     pistonPressure: {
         type: Number,
     },
+    thickness: {
+        type: Number,
+    },
+    breakingForce: {
+        type: Number,
+    },
+    absorbency: {
+        type: Number,
+    },
+
     paintMix: {
-        type: mongoose.Schema.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'PaintMix',
     },
     engobMix: {
-        type: mongoose.Schema.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'EngobMix',
     },
     bodyMix: {
-        type: mongoose.Schema.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'BodyMix'
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now()
     }
 });
 

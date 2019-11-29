@@ -17,11 +17,11 @@ async function createEngobMixes(req, res) {
     const {error} = validateEngobMix(req.body);
     if(error) return res.status(400).send(error.details[0].message);
     let newEngob = new EngobMix({
-        code: req.body.code,
-        type: req.body.type,
-        glize: req.body.glize,
-        components: req.body.components,
-        createdAt: Date.now()
+        code:          req.body.code,
+        type:          req.body.type,
+        glize:         req.body.glize,
+        components:    req.body.components,
+        createdAt:     Date.now()
     });
 
     newEngob = await newEngob.save();
@@ -60,22 +60,22 @@ async function deleteEngobMixes(req, res) {
     return res.send(engobMix);
 }
 
-function validateEngobMix(bookmark) {
+function validateEngobMix(engobMix) {
     const componentsSchema = Joi.object().keys({
         _id: Joi.string().optional(),
         material: Joi.string().required(),
         quantity: Joi.number().min(0).required(),
     });
     const schema = {
-        _id: Joi.string().optional(),
-        createdAt: Joi.string().optional(),
-        code: Joi.string().trim().min(1).required(),
-        type: Joi.string().trim().min(1).required(),
-        glize: Joi.string().trim().min(1).required(),
-        components: Joi.array().items(componentsSchema).min(1).required()
+        _id:        Joi.string().optional(),
+        code:       Joi.string().trim().min(1).required(),
+        type:       Joi.string().trim().min(1).required(),
+        glize:      Joi.string().trim().min(1).required(),
+        components: Joi.array().items(componentsSchema).min(1).required(),
+        createdAt:  Joi.date().default(Date.now())
     };
 
-    return Joi.validate(bookmark, schema);
+    return Joi.validate(engobMix, schema);
 }
 
 module.exports = {
