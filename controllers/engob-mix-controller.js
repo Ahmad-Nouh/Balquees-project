@@ -64,7 +64,7 @@ function validateEngobMix(bookmark) {
     const componentsSchema = Joi.object().keys({
         _id: Joi.string().optional(),
         material: Joi.string().required(),
-        quantity: Joi.number().integer().min(1).required(),
+        quantity: Joi.number().min(0).required(),
     });
     const schema = {
         _id: Joi.string().optional(),

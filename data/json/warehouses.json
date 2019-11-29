@@ -2,11 +2,13 @@
     {
         "name_en": "Clay Warehouse",
         "name_ar": "مستودع الغضار",
-        "materials": []
+        "materials": [],
+        "order": 1
     },
     {
         "name_en": "Paint Warehouse",
         "name_ar": "مستودع الطلاء",
-        "materials": []
+        "materials": [],
+        "order": 0
     }
 ]
