@@ -1,7 +1,10 @@
 const {ProductCard} = require('../Models/ProductCard');
 const Joi = require('joi');
+const multer = require('multer');
+const STORAGE = process.env.STORAGE;
+const parseJson = require('../middlewares/parser');
 
-async function getProductCard(req, res) {
+async function getProductCards(req, res) {
     const productCard = await ProductCard
     .find()
     .populate({
@@ -22,62 +25,93 @@ async function getProductCard(req, res) {
 }
 
 
-async function createProductCard(req, res) {
-    const {error} = validateProductCard(req.body);
-    if(error) return res.status(400).send(error.details[0].message);
-    let newProductCard = new BodyMix({
+async function createProductCard(req, res, err) {
+    parseJson(req.body);
+    // handle errors caused by multer
+    if (err instanceof multer.MulterError) {
+        return res.status(400).send(req.fileValidationError);
+    }
+    if(req.fileValidationError) {
+        return res.status(400).send(req.fileValidationError);
+    }
 
+    let newProductCard = {
         productName:    req.body.productName,
         code:           req.body.code,
+        type:           req.body.type,
+        glize:          req.body.glize,
         productionDate: req.body.productionDate,
         dimensions:     req.body.dimensions,
         bOvenHeat:      req.body.bOvenHeat,
         pOvenHeat:      req.body.pOvenHeat,
-        bOvenPeriod:    req.body.bOvenPeriod,
-        pOvenPeriod:    req.body.pOvenPeriod,
+        bOvenPeriod:    +req.body.bOvenPeriod,
+        pOvenPeriod:    +req.body.pOvenPeriod,
         engobFactors:   req.body.engobFactors,
         paintFactors:   req.body.paintFactors,
-        pistonPressure: req.body.pistonPressure,
-        thickness:      req.body.thickness,
-        breakingForce:  req.body.breakingForce,
-        absorbency:     req.body.absorbency,
+        pistonPressure: +req.body.pistonPressure,
+        thickness:      +req.body.thickness,
+        breakingForce:  +req.body.breakingForce,
+        radiation:     +req.body.radiation,
 
-        paintMix,
-        engobMix,
-        bodyMix,
+        paintMix:       req.body.paintMix,
+        engobMix:       req.body.engobMix,
+        bodyMix:        req.body.bodyMix,
         createdAt:  Date.now()
-    });
+    };
 
-    newProductCard = await newProductCard.save();
+    console.log('newProductCard ', newProductCard);
 
-    return res.send(newProductCard);
+    // if product card has an image
+    if (req.file) {
+        const index = req.file.destination.indexOf(STORAGE) + STORAGE.length;
+        const imagePath = `${req.file.destination.substring(index)}/${req.file.filename}`;
+        newProductCard.imageUrl = imagePath;
+    }
+
+
+    // validate product cards
+    const {error} = validateProductCard(newProductCard);
+    if(error) return res.status(400).send(error.details[0].message);
+
+    let productCard = new ProductCard(newProductCard);
+    productCard = await productCard.save();
+
+    return res.send(productCard);
 }
 
 async function updateProductCard(req, res) {
     let newProductCard = await ProductCard.findById(req.params.id);
     if(!newProductCard) return res.status(404).send('Product Card not found!!');
-    const {error} = validateProductCard(req.body);
+
+    newProductCard.productName=         req.body.productName;
+    newProductCard.code=                req.body.code;
+    newProductCard.productionDate=      req.body.productionDate;
+    newProductCard.dimensions=          req.body.dimensions;
+    newProductCard.bOvenHeat=           req.body.bOvenHeat;
+    newProductCard.pOvenHeat=           req.body.pOvenHeat;
+    newProductCard.bOvenPeriod=         req.body.bOvenPeriod;
+    newProductCard.pOvenPeriod=         req.body.pOvenPeriod;
+    newProductCard.engobFactors=        req.body.engobFactors;
+    newProductCard.paintFactors=        req.body.paintFactors;
+    newProductCard.pistonPressure=      req.body.pistonPressure;
+    newProductCard.thickness=           req.body.thickness;
+    newProductCard.breakingForce=       req.body.breakingForce;
+    newProductCard.radiation=          req.body.radiation;
+
+    newProductCard.paintMix=            req.body.paintMix;
+    newProductCard.engobMix=            req.body.engobMix;
+    newProductCard.bodyMix=             req.body.bodyMix;
+
+    // if product card has an image
+    if (req.file) {
+        const index = req.file.destination.indexOf(STORAGE) + STORAGE.length;
+        const imagePath = `${req.file.destination.substring(index)}/${req.file.filename}`;
+        newProductCard.imageUrl = imagePath;
+    }
+
+    // validate product card
+    const {error} = validateProductCard(newProductCard);
     if(error) return res.status(400).send(error.details[0].message);
-
-    newProductCard.productName=         req.body.productName,
-    newProductCard.code=                req.body.code,
-    newProductCard.productionDate=      req.body.productionDate,
-    newProductCard.dimensions=          req.body.dimensions,
-    newProductCard.bOvenHeat=           req.body.bOvenHeat,
-    newProductCard.pOvenHeat=           req.body.pOvenHeat,
-    newProductCard.bOvenPeriod=         req.body.bOvenPeriod,
-    newProductCard.pOvenPeriod=         req.body.pOvenPeriod,
-    newProductCard.engobFactors=        req.body.engobFactors,
-    newProductCard.paintFactors=        req.body.paintFactors,
-    newProductCard.pistonPressure=      req.body.pistonPressure,
-    newProductCard.thickness=           req.body.thickness,
-    newProductCard.breakingForce=       req.body.breakingForce,
-    newProductCard.absorbency=          req.body.absorbency,
-
-    newProductCard.paintMix,
-    newProductCard.engobMix,
-    newProductCard.bodyMix
-
 
     newProductCard = await newProductCard.save();
 
@@ -88,7 +122,7 @@ async function updateProductCard(req, res) {
         })
         .populate(newProductCard, {
             path: 'engobMix',
-            model: 'EngobMix';
+            model: 'EngobMix'
         })
         .populate(newProductCard, {
             path: 'bodyMix',
@@ -112,28 +146,47 @@ async function deleteProductCard(req, res) {
 function validateProductCard(productCard) {
     const dimensionsSchema = Joi.object().keys({
        width:           Joi.number().min(1).optional(),
-       hight:           Joi.number().min(1).optional(),
+       height:           Joi.number().min(1).optional(),
     });
+
+    const factorSchema = Joi.object().keys({
+        weight: Joi.number(),
+        density: Joi.number(),
+        viscosity: Joi.number(),
+    });
+
+    const heatSchema = Joi.object().keys({
+        low: Joi.number(),
+        high: Joi.number(),
+    });
+
     const schema = {
-        _id:            Joi.string().optional(),
+        _id:            Joi.any().optional(),
         createdAt:      Joi.string().optional(),
         productName:    Joi.string().trim().min(1).required(),
         code:           Joi.string().trim().min(1).required(),
-        productionDate: Joi.date().trim().required(),
-        bOvenHeat:      Joi.number().min(1).optional(),
-        pOvenHeat:      Joi.number().min(1).optional(),
+        type:           Joi.string().trim().min(1).required(),
+        glize:          Joi.string().trim().min(1).required(),
+        imageUrl:       Joi.string().trim(),
+        productionDate: Joi.any().optional(),
+        bOvenHeat:      heatSchema,
+        pOvenHeat:      heatSchema,
         bOvenPeriod:    Joi.number().min(1).optional(),
         pOvenPeriod:    Joi.number().min(1).optional(),
-        engobFactors:   Joi.number().min(1).optional(),
-        paintFactors:   Joi.number().min(1).optional(),
+        engobFactors:   factorSchema,
+        paintFactors:   factorSchema,
         pistonPressure: Joi.number().min(1).optional(),
         thickness:      Joi.number().min(1).optional(),
         breakingForce:  Joi.number().min(1).optional(),
-        absorbency:     Joi.number().min(1).optional(),
+        radiation:     Joi.number().min(1).optional(),
         createdAt:      Joi.date().default(Date.now()),
-        dimensions:     dimensions,
-        
+        dimensions:     dimensionsSchema,
+        paintMix:       Joi.any().required(),
+        engobMix:       Joi.any().required(),
+        bodyMix:        Joi.any().required()
     };
 
     return Joi.validate(productCard, schema);
 }
+
+module.exports = {getProductCards, createProductCard, updateProductCard, deleteProductCard};

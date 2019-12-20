@@ -2,12 +2,19 @@ const mongoose = require('mongoose');
 const { WALLS, FLOORS, WALLS_MAT, WALLS_TRANSPARENT, FLOORS_MAT, FLOORS_TRANSPARENT } = require('./Constants');
 const { HeatSchema } = require('./Heat');
 const { FactorsSchema } = require('./Factors');
+const { DimensionsSchema } = require('./Dimensions');
 
 const schema = new mongoose.Schema({
     productName: {
         type: String
     },
     code: {
+        type: String
+    },
+    type: {
+        type: String
+    },
+    glize: {
         type: String
     },
     productionDate: {
@@ -35,7 +42,6 @@ const schema = new mongoose.Schema({
     paintFactors: {
         type: FactorsSchema,
     },
-    
     pistonPressure: {
         type: Number,
     },
@@ -45,10 +51,12 @@ const schema = new mongoose.Schema({
     breakingForce: {
         type: Number,
     },
-    absorbency: {
+    radiation: {
         type: Number,
     },
-
+    imageUrl: {
+        type: String
+    },
     paintMix: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'PaintMix',
