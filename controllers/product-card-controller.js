@@ -76,7 +76,23 @@ async function createProductCard(req, res, err) {
     let productCard = new ProductCard(newProductCard);
     productCard = await productCard.save();
 
-    return res.send(productCard);
+    let result = await ProductCard
+        .populate(productCard, {
+            path: 'paintMix',
+            model: 'PaintMix'
+        });
+
+    result = await ProductCard.populate(result, {
+        path: 'engobMix',
+        model: 'EngobMix'
+    });
+
+    result = await ProductCard.populate(result, {
+        path: 'bodyMix',
+        model: 'BodyMix'
+    });
+
+    return res.send(result);
 }
 
 async function updateProductCard(req, res) {
@@ -115,20 +131,22 @@ async function updateProductCard(req, res) {
 
     newProductCard = await newProductCard.save();
 
-    const result = await ProductCard
+    let result = await ProductCard
         .populate(newProductCard, {
             path: 'paintMix',
             model: 'PaintMix'
-        })
-        .populate(newProductCard, {
-            path: 'engobMix',
-            model: 'EngobMix'
-        })
-        .populate(newProductCard, {
-            path: 'bodyMix',
-            model: 'BodyMixr'
         });
-    
+
+    result = await ProductCard.populate(result, {
+        path: 'engobMix',
+        model: 'EngobMix'
+    });
+
+    result = await ProductCard.populate(result, {
+        path: 'bodyMix',
+        model: 'BodyMix'
+    });
+
 
     return res.send(result);
 }
