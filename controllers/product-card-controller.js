@@ -95,12 +95,23 @@ async function createProductCard(req, res, err) {
     return res.send(result);
 }
 
-async function updateProductCard(req, res) {
+async function updateProductCard(req, res, err) {
     let newProductCard = await ProductCard.findById(req.params.id);
     if(!newProductCard) return res.status(404).send('Product Card not found!!');
 
+    // parseJson(req.body);
+    // handle errors caused by multer
+    if (err instanceof multer.MulterError) {
+        return res.status(400).send(req.fileValidationError);
+    }
+    if(req.fileValidationError) {
+        return res.status(400).send(req.fileValidationError);
+    }
+
     newProductCard.productName=         req.body.productName;
     newProductCard.code=                req.body.code;
+    newProductCard.type=                req.body.type;
+    newProductCard.glize=               req.body.glize;
     newProductCard.productionDate=      req.body.productionDate;
     newProductCard.dimensions=          req.body.dimensions;
     newProductCard.bOvenHeat=           req.body.bOvenHeat;
@@ -118,6 +129,8 @@ async function updateProductCard(req, res) {
     newProductCard.engobMix=            req.body.engobMix;
     newProductCard.bodyMix=             req.body.bodyMix;
 
+    newProductCard.updatedAt=           Date.now();
+
     // if product card has an image
     if (req.file) {
         const index = req.file.destination.indexOf(STORAGE) + STORAGE.length;
@@ -126,8 +139,8 @@ async function updateProductCard(req, res) {
     }
 
     // validate product card
-    const {error} = validateProductCard(newProductCard);
-    if(error) return res.status(400).send(error.details[0].message);
+    // const {error} = validateProductCard(newProductCard);
+    // if(error) return res.status(400).send(error.details[0].message);
 
     newProductCard = await newProductCard.save();
 
@@ -179,14 +192,14 @@ function validateProductCard(productCard) {
     });
 
     const schema = {
-        _id:            Joi.any().optional(),
+        _id:            Joi.optional(),
         createdAt:      Joi.string().optional(),
         productName:    Joi.string().trim().min(1).required(),
         code:           Joi.string().trim().min(1).required(),
         type:           Joi.string().trim().min(1).required(),
         glize:          Joi.string().trim().min(1).required(),
         imageUrl:       Joi.string().trim(),
-        productionDate: Joi.any().optional(),
+        productionDate: Joi.date().optional(),
         bOvenHeat:      heatSchema,
         pOvenHeat:      heatSchema,
         bOvenPeriod:    Joi.number().min(1).optional(),
@@ -199,9 +212,9 @@ function validateProductCard(productCard) {
         radiation:     Joi.number().min(1).optional(),
         createdAt:      Joi.date().default(Date.now()),
         dimensions:     dimensionsSchema,
-        paintMix:       Joi.any().required(),
-        engobMix:       Joi.any().required(),
-        bodyMix:        Joi.any().required()
+        paintMix:       Joi.string().required(),
+        engobMix:       Joi.string().required(),
+        bodyMix:        Joi.string().required()
     };
 
     return Joi.validate(productCard, schema);
