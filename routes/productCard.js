@@ -7,11 +7,13 @@ const parser = require('../middlewares/parser');
 // get Product Card
 router.get('/', controller.getProductCards);
 // create Product Card
-router.post('/', upload, controller.createProductCard);
+router.post('/', controller.createProductCard);
 // update Product Card
-router.put('/:id', upload, controller.updateProductCard);
+router.put('/:id', controller.updateProductCard);
 // delete Product Card
 router.delete('/:id', controller.deleteProductCard);
+// attach image to product card
+router.patch('/:id', upload, controller.attachImage);
 
 
 module.exports = router;

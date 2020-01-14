@@ -25,15 +25,7 @@ async function getProductCards(req, res) {
 }
 
 
-async function createProductCard(req, res, err) {
-    parseJson(req.body);
-    // handle errors caused by multer
-    if (err instanceof multer.MulterError) {
-        return res.status(400).send(req.fileValidationError);
-    }
-    if(req.fileValidationError) {
-        return res.status(400).send(req.fileValidationError);
-    }
+async function createProductCard(req, res) {
 
     let newProductCard = {
         productName:    req.body.productName,
@@ -95,18 +87,9 @@ async function createProductCard(req, res, err) {
     return res.send(result);
 }
 
-async function updateProductCard(req, res, err) {
+async function updateProductCard(req, res) {
     let newProductCard = await ProductCard.findById(req.params.id);
     if(!newProductCard) return res.status(404).send('Product Card not found!!');
-
-    // parseJson(req.body);
-    // handle errors caused by multer
-    if (err instanceof multer.MulterError) {
-        return res.status(400).send(req.fileValidationError);
-    }
-    if(req.fileValidationError) {
-        return res.status(400).send(req.fileValidationError);
-    }
 
     newProductCard.productName=         req.body.productName;
     newProductCard.code=                req.body.code;
@@ -171,7 +154,49 @@ async function deleteProductCard(req, res) {
     return res.send(productCard);
 }
 
+async function attachImage(req, res, err) {
+    let imagePath;
+    console.log('body ', req.body);
 
+    // find product card
+    let productCard = await ProductCard.findById(req.params.id);
+
+    // image validation
+    if (err instanceof multer.MulterError) {
+      return res.status(400).send(req.fileValidationError);
+    }
+    if(req.fileValidationError) {
+      return res.status(400).send(req.fileValidationError);
+    }
+  
+
+    if (req.file) {
+      const index = req.file.destination.indexOf(STORAGE) + STORAGE.length;
+      imagePath = `${req.file.destination.substring(index)}/${req.file.filename}`;
+    }
+
+    productCard.imageUrl = imagePath;
+
+    productCard = await productCard.save();
+
+    let result = await ProductCard
+        .populate(productCard, {
+            path: 'paintMix',
+            model: 'PaintMix'
+        });
+
+    result = await ProductCard.populate(result, {
+        path: 'engobMix',
+        model: 'EngobMix'
+    });
+
+    result = await ProductCard.populate(result, {
+        path: 'bodyMix',
+        model: 'BodyMix'
+    });
+
+    return res.send(productCard);
+}
 
 
 function validateProductCard(productCard) {
@@ -220,4 +245,4 @@ function validateProductCard(productCard) {
     return Joi.validate(productCard, schema);
 }
 
-module.exports = {getProductCards, createProductCard, updateProductCard, deleteProductCard};
+module.exports = {getProductCards, createProductCard, updateProductCard, deleteProductCard, attachImage};
