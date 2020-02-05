@@ -1,7 +1,17 @@
 require('dotenv').config()
 const express = require('express');
+const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+process.on('uncaughtException', (err, origin) => {
+    fs.writeSync(
+      process.stderr.fd,
+      `Caught exception: ${err}\n` +
+      `Exception origin: ${origin}`
+    );
+  });
+
 const paintRoute = require('./routes/paintMixes');
 const bodyRoute = require('./routes/bodyMixes');
 const engobRoute = require('./routes/engobMixes');
